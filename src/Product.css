@@ -1,0 +1,17 @@
+.productCard {
+    width: 600px;
+    margin: auto;
+    padding: 1rem;
+}
+
+.productCard img {
+    margin-top: 2rem;
+    width: 300px;
+    height: auto;
+}
+
+.product-comment-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+}

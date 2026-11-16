@@ -1,0 +1,10 @@
+a {
+    color: white;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+
+.full-cart {
+    display: flex;
+}
