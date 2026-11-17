@@ -1,5 +1,6 @@
 // Dans cette page on peut utiliser useParam qui permet de récup les paramètres dans l'url
 // De cette manière on recup l'id du produit et faire une requete API 
+
 import { useParams } from "react-router-dom";
 import { useEffect, useContext, useState } from "react"
 
@@ -12,13 +13,11 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Rating from '@mui/material/Rating';
 
-
 import "./Product.css"
-
 
 // TODO : 
 
-// Ajouter une section de commentaires 
+// Ajouter une section de commentaires - 
 
 // En React -> Utiliser MUI poour faire un formulaire de commentaires et une zone d'affichage de ces commentaires; 
 // Si pas de commentaires un message suffit (Aucun commentaire pour le moment).
@@ -29,8 +28,8 @@ import "./Product.css"
 
 
 function Product() {
-
     const [comment, setComment] = useState("")
+    const [comments, setComments] = useState([])
 
     let { logout } = useAuth()
     let { products, product, setProduct, ratings, setProductRating } = useContext(ShopContext)
@@ -43,6 +42,22 @@ function Product() {
             (item.id_product == params.id) && setProduct(item)
         })
     }, []) 
+
+    useEffect(() => {
+        fetch(`http://localhost:3000/product/${params.id}/comments`, {
+            headers: {
+                "Content-Type" : "application/json",
+                "Authorization" : `Bearer ${token}`
+            }
+        })
+        .then(results => results.json())
+        .then(data => {
+            console.log(data)
+            setComments(data)
+        })
+        .catch(err => console.log(err))
+    }, [])
+
 
     // Le composant Rating de MUI permet de récupérer la note ici avec newValue en 2eme argument. 
     // Une value de Null équivaut à zéro ou pas d'étoiles 
@@ -89,7 +104,15 @@ function Product() {
                 }
             })
             .then(results => results.json())
-            .then(data => console.log(data))
+            .then(data => {
+
+                console.log(data)
+                let { user } = data
+
+                setComments([ ... comments, { username : user.username, comment: comment, date : Date.now() } ])
+                setComment("")
+
+            })
             .catch(err => console.log(err))
         }
     }
@@ -128,7 +151,14 @@ function Product() {
             </div>
 
             <div className="comment-section">
-
+                {!comments.length ? <h3>Aucun commentaires pour le moment...</h3>
+                : comments.map((comment) => 
+                    <>
+                        <h4>{comment.username}</h4>
+                        <h5>{comment.date}</h5>
+                        <p>{comment.comment}</p>
+                    </>
+                )}
             </div>
         </>
     );
